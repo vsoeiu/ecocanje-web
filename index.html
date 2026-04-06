@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EcoCanje Premium</title>
+    
+    <link rel="stylesheet" href="style.css">
+    
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+    <script src="https://unpkg.com/html5-qrcode"></script>
+</head>
+<body>
+    <div id="app-container">
+        
+        <section id="auth-section" class="screen active">
+            <div class="auth-header">
+                <div class="logo-glow">
+                    <i class="fa-solid fa-leaf"></i>
+                </div>
+                <h1>EcoCanje</h1>
+                <p class="subtitle">Recicla, Gana y Salva el Planeta</p>
+            </div>
+            
+            <button id="btnGoogle" class="btn-google-official">
+                <div class="google-icon-wrapper">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" alt="Google">
+                </div>
+                <span class="google-text">Continuar con Google</span>
+            </button>
+
+            <div class="divider">
+                <span>O usa tus credenciales</span>
+            </div>
+
+            <div id="registerFields" style="display:none; width: 100%;">
+                <div class="input-group">
+                    <i class="fa-solid fa-user"></i>
+                    <input type="text" id="nombre" placeholder="Nombre">
+                </div>
+                <div class="input-group">
+                    <i class="fa-regular fa-user"></i>
+                    <input type="text" id="apellido" placeholder="Apellido">
+                </div>
+            </div>
+
+            <div class="input-group">
+                <i class="fa-solid fa-at"></i>
+                <input type="text" id="email" placeholder="Usuario Institucional o Correo">
+            </div>
+
+            <div class="input-group">
+                <i class="fa-solid fa-lock"></i>
+                <input type="password" id="password" placeholder="Contraseña">
+                <i class="fa-solid fa-eye toggle-password" id="togglePass" style="cursor: pointer; color: var(--text-muted);"></i>
+            </div>
+
+            <div class="input-group" id="groupConfirmPass" style="display:none;">
+                <i class="fa-solid fa-lock"></i>
+                <input type="password" id="confirmPassword" placeholder="Confirmar Contraseña">
+                <i class="fa-solid fa-eye toggle-password" id="toggleConfirmPass" style="cursor: pointer; color: var(--text-muted);"></i>
+            </div>
+            
+            <button id="btnLogin" class="btn-primary">Iniciar Sesión <i class="fa-solid fa-arrow-right"></i></button>
+            <button id="btnRegister" class="btn-primary" style="display:none;">Crear Cuenta <i class="fa-solid fa-user-plus"></i></button>
+            
+            <p id="toggleAuth" class="link-switch">¿No tienes cuenta? <strong>Regístrate aquí</strong></p>
+        </section>
+
+        <section id="dashboard-section" class="screen">
+            <div class="top-nav">
+                <div class="user-info">
+                    <i class="fa-solid fa-circle-user avatar-icon"></i>
+                    <div>
+                        <p class="greeting">Bienvenido de vuelta,</p>
+                        <h2 id="saludoUsuario">Eco-Reciclador</h2>
+                    </div>
+                </div>
+                <button id="btnLogout" class="btn-icon"><i class="fa-solid fa-right-from-bracket"></i></button>
+            </div>
+            
+            <div class="card-puntos floating">
+                <i class="fa-solid fa-crown gold-icon"></i>
+                <p>Balance Total</p>
+                <div class="points-display">
+                    <h1 id="tvPuntos">0</h1>
+                    <span>PTS</span>
+                </div>
+            </div>
+
+            <div class="action-grid">
+                <button id="btnAbrirScanner" class="btn-action pulse-green">
+                    <i class="fa-solid fa-qrcode"></i>
+                    <span>Escanear QR</span>
+                </button>
+                <button id="btnVerHistorial" class="btn-action">
+                    <i class="fa-solid fa-clock-rotate-left"></i>
+                    <span>Historial</span>
+                </button>
+            </div>
+        </section>
+
+        <section id="scanner-section" class="screen">
+            <div class="scanner-header">
+                <h2>Escanea la Botella</h2>
+                <p>Apunta al código de la pantalla OLED</p>
+            </div>
+            <div class="scanner-frame">
+                <div id="reader"></div>
+            </div>
+            <button id="btnCerrarScanner" class="btn-danger"><i class="fa-solid fa-xmark"></i> Cancelar</button>
+        </section>
+
+        <section id="history-section" class="screen">
+            <div class="top-nav">
+                <h2>Mi Historial</h2>
+                <button id="btnVolverDashboard" class="btn-icon"><i class="fa-solid fa-arrow-left"></i></button>
+            </div>
+            <div id="lista-historial" class="history-container">
+                </div>
+        </section>
+
+    </div>
+
+    <script type="module" src="app.js"></script>
+</body>
+</html>
