@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>EcoCanje UTL</title>
+    
+    <link rel="stylesheet" href="style.css?v=3.0">
+    
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+    <script src="https://unpkg.com/html5-qrcode"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body style="background-color: #000;">
+    <div id="app-container">
+        
+        <section id="auth-section" class="screen active">
+            <div class="auth-header">
+                <div class="logo-glow"><i class="fa-solid fa-leaf"></i></div>
+                <h1>EcoCanje</h1>
+                <p class="subtitle">UTL - Campus León</p>
+            </div>
+            
+            <button id="btnGoogle" class="btn-google-custom">
+                <i class="fa-brands fa-google"></i><span>Entrar con Google</span>
+            </button>
+
+            <div class="divider"><span>O usa tu cuenta</span></div>
+
+            <div id="registerFields" style="display:none; width: 100%;">
+                <div class="input-group"><i class="fa-solid fa-user"></i><input type="text" id="nombre" placeholder="Nombre Completo"></div>
+            </div>
+
+            <div class="input-group"><i class="fa-solid fa-at"></i><input type="text" id="email" placeholder="Usuario o Correo"></div>
+            <div class="input-group"><i class="fa-solid fa-lock"></i><input type="password" id="password" placeholder="Contraseña"></div>
+            
+            <button id="btnLogin" class="btn-primary">Iniciar Sesión</button>
+            <button id="btnRegister" class="btn-primary" style="display:none;">Crear Cuenta</button>
+            <p id="toggleAuth" class="link-switch">¿No tienes cuenta? <strong>Regístrate</strong></p>
+        </section>
+
+        <section id="dashboard-section" class="screen">
+            <div class="top-nav">
+                <div class="user-info">
+                    <i class="fa-solid fa-circle-user avatar-icon"></i>
+                    <div><p class="greeting">Hola,</p><h2 id="saludoUsuario">Usuario</h2></div>
+                </div>
+                <button id="btnLogout" class="btn-icon"><i class="fa-solid fa-power-off"></i></button>
+            </div>
+            
+            <div class="card-puntos floating">
+                <div class="badge-nivel" id="tvNivel">Semilla 🌱</div>
+                
+                <div class="points-display"><h1 id="tvPuntos">0</h1><span>PTS</span></div>
+                
+                <div class="progress-container">
+                    <div class="progress-bar" id="progressBar"></div>
+                </div>
+                <p id="tvSiguienteNivel" class="text-progreso">Cargando progreso...</p>
+            </div>
+
+            <div class="reward-box">
+                <i class="fa-solid fa-gift" style="color:var(--gold); font-size:20px;"></i>
+                <div>
+                    <p style="font-size: 11px; color: var(--text-muted);">Recompensa Desbloqueada</p>
+                    <strong id="tvRecompensa" style="font-size: 13px;">Ninguna</strong>
+                </div>
+            </div>
+
+            <div class="action-grid">
+                <button id="btnAbrirScanner" class="btn-action pulse-green"><i class="fa-solid fa-qrcode"></i><span>Escanear</span></button>
+                <button id="btnVerHistorial" class="btn-action"><i class="fa-solid fa-list-ul"></i><span>Historial</span></button>
+            </div>
+        </section>
+
+        <section id="scanner-section" class="screen">
+            <div class="scanner-frame"><div id="reader"></div></div>
+            <button id="btnCerrarScanner" class="btn-danger">Cancelar</button>
+        </section>
+        
+        <section id="history-section" class="screen">
+            <div class="top-nav"><h2>Historial</h2><button id="btnVolverDashboard" class="btn-icon"><i class="fa-solid fa-xmark"></i></button></div>
+            <div id="lista-historial" class="history-container"></div>
+        </section>
+
+    </div>
+    
+    <script type="module" src="app.js?v=4"></script>
+</body>
+</html>
