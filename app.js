@@ -1,6 +1,6 @@
-// Importar funciones modulares de Firebase (Versión 12.11.0)
+// Importar funciones modulares de Firebase (Cambiamos a signInWithPopup)
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
-import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut, GoogleAuthProvider, signInWithRedirect, getRedirectResult } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-auth.js";
+import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-auth.js";
 import { getFirestore, doc, setDoc, getDoc, updateDoc, collection, addDoc, onSnapshot, increment } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore.js";
 
 // Configuración de tu proyecto
@@ -66,23 +66,8 @@ function actualizarUI_Gamificacion(puntos) {
 }
 
 // ==========================================
-// AUTENTICACIÓN
+// AUTENTICACIÓN (MÉTODO POPUP ANTI-FALLOS)
 // ==========================================
-getRedirectResult(auth).then(async (result) => {
-    if (result) {
-        const user = result.user;
-        const userDoc = await getDoc(doc(db, "usuarios", user.uid));
-        if (!userDoc.exists()) {
-            await setDoc(doc(db, "usuarios", user.uid), { 
-                nombre: user.displayName || "Eco-Usuario", 
-                puntos: 0 
-            });
-        }
-    }
-}).catch((error) => {
-    console.error("Error en Google Auth:", error);
-});
-
 onAuthStateChanged(auth, (user) => {
     if (user) {
         currentUserUid = user.uid;
@@ -96,8 +81,22 @@ onAuthStateChanged(auth, (user) => {
     }
 });
 
-document.getElementById('btnGoogle').addEventListener('click', () => {
-    signInWithRedirect(auth, provider);
+document.getElementById('btnGoogle').addEventListener('click', async () => {
+    try {
+        // Usamos Popup para que el celular no borre la sesión
+        const result = await signInWithPopup(auth, provider);
+        const user = result.user;
+        const userDoc = await getDoc(doc(db, "usuarios", user.uid));
+        
+        if (!userDoc.exists()) {
+            await setDoc(doc(db, "usuarios", user.uid), { 
+                nombre: user.displayName || "Eco-Usuario", 
+                puntos: 0 
+            });
+        }
+    } catch (error) {
+        Swal.fire('Error de Google', 'Motivo: ' + error.message, 'error');
+    }
 });
 
 document.getElementById('btnLogin').addEventListener('click', async () => {
@@ -190,14 +189,12 @@ document.getElementById('btnAbrirScanner').addEventListener('click', () => {
     
     html5QrCode = new Html5Qrcode("reader");
 
-    // Configuración universal garantizada para no chocar con el hardware del celular
     const cameraConfig = { facingMode: "environment" };
     const qrConfig = { fps: 15, qrbox: { width: 250, height: 250 } };
 
     html5QrCode.start(cameraConfig, qrConfig, async (decodedText) => {
         html5QrCode.stop().then(() => procesarQR(decodedText));
     }).then(() => {
-        // Retraso de 800ms para asegurar que el lente ya está activo antes de hacer zoom
         setTimeout(() => {
             try {
                 const track = html5QrCode.getRunningTrack();
@@ -211,7 +208,6 @@ document.getElementById('btnAbrirScanner').addEventListener('click', () => {
             }
         }, 800);
     }).catch(err => {
-        // Ahora mostrará el error técnico exacto en vez de solo "otorga permisos"
         Swal.fire('Error de Cámara', 'Motivo: ' + err, 'error');
         document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
         document.getElementById('dashboard-section').classList.add('active');
@@ -227,7 +223,6 @@ document.getElementById('btnCerrarScanner').addEventListener('click', () => {
 async function procesarQR(textoQR) {
     try {
         const fechaActual = new Date().toLocaleString();
-        
         const idTransaccion = "QR_DEMO_" + Math.floor(Math.random() * 900000);
 
         await addDoc(collection(db, `usuarios/${currentUserUid}/mi_historial`), {
