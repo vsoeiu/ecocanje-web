@@ -182,7 +182,7 @@ document.getElementById('btnVolverDashboard').addEventListener('click', () => {
 });
 
 // ==========================================
-// ESCÁNER (AUTO-ZOOM EXTREMO, ALTA RESOLUCIÓN Y MODO DIOS)
+// ESCÁNER (CONFIGURACIÓN SEGURA Y ZOOM EXTREMO)
 // ==========================================
 document.getElementById('btnAbrirScanner').addEventListener('click', () => {
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
@@ -190,25 +190,19 @@ document.getElementById('btnAbrirScanner').addEventListener('click', () => {
     
     html5QrCode = new Html5Qrcode("reader");
 
-    // Pedimos cámara trasera en 1080p
-    const cameraConfig = {
-        facingMode: "environment",
-        width: { ideal: 1920 },
-        height: { ideal: 1080 }
-    };
-    
+    // Configuración universal garantizada para no chocar con el hardware del celular
+    const cameraConfig = { facingMode: "environment" };
     const qrConfig = { fps: 15, qrbox: { width: 250, height: 250 } };
 
     html5QrCode.start(cameraConfig, qrConfig, async (decodedText) => {
         html5QrCode.stop().then(() => procesarQR(decodedText));
     }).then(() => {
-        // Le damos 800ms al lente para que enfoque antes de meter el zoom de golpe
+        // Retraso de 800ms para asegurar que el lente ya está activo antes de hacer zoom
         setTimeout(() => {
             try {
                 const track = html5QrCode.getRunningTrack();
                 const capabilities = track.getCapabilities();
                 if (capabilities.zoom) {
-                    // Zoom extremo a 5.0x
                     const zoomDeseado = Math.min(capabilities.zoom.max, 5.0);
                     track.applyConstraints({ advanced: [{ zoom: zoomDeseado }] });
                 }
@@ -217,7 +211,8 @@ document.getElementById('btnAbrirScanner').addEventListener('click', () => {
             }
         }, 800);
     }).catch(err => {
-        Swal.fire('Cámara', 'Por favor otorga permisos de cámara en tu navegador.', 'error');
+        // Ahora mostrará el error técnico exacto en vez de solo "otorga permisos"
+        Swal.fire('Error de Cámara', 'Motivo: ' + err, 'error');
         document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
         document.getElementById('dashboard-section').classList.add('active');
     });
@@ -233,17 +228,14 @@ async function procesarQR(textoQR) {
     try {
         const fechaActual = new Date().toLocaleString();
         
-        // ID aleatorio para que todos los QRs sean únicos en el historial
         const idTransaccion = "QR_DEMO_" + Math.floor(Math.random() * 900000);
 
-        // Guardar en historial
         await addDoc(collection(db, `usuarios/${currentUserUid}/mi_historial`), {
             idTransaccion: idTransaccion,
             fecha: fechaActual, 
             puntos: 10
         });
         
-        // Sumar puntos
         await updateDoc(doc(db, "usuarios", currentUserUid), { puntos: increment(10) });
 
         Swal.fire({
